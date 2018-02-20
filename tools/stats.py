@@ -54,5 +54,5 @@ def iqr(data):
         else:
             return mean(d[len(d) + 1:]) - mean(d[:len(d)])
     else:
-        print "ERROR: data set too small!"
+        print "ERROR: data set too small! len(data) >= 5"
         return -1
