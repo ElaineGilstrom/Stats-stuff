@@ -1,0 +1,3 @@
+In the checkpoint I came accrost a problem I was convinced I got right, so I wrote this to verify
+if what I thought was correct or not. Turns out I was off a bit, but the checkpoint isnt entirely
+accurate regardless.
