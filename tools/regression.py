@@ -10,25 +10,69 @@ def checkDPFormat(data):
     return True
 
 def checkVarFormat(data):
-    for i in data:
+    if !isinstance(data, dict):
+        print "ERROR: Var not dictionary"
+        return False
+    for i in data.keys():
+        if !isinstance(i, str):
+            print "ERROR: Var contians non-string key"
+            return False
+        elif len(i) != 1:
+            print "ERROR: Var contains key that is not len(1)!"
+            return False
         try:
-            if len(i) != 2:
-                return False
-            if !isinstance(i[0], str):
-                return False
-            if !isinstance(i[1], int):
-                return False
-        except TypeError:
+            float(data[i])
+        except ValueError:
+            print "ERROR: Vars contains non-numeric
             return False
     return True
 
-def solve(var, equation):#use recursion for ()
+def nAsStr(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+def solve(var, equ):
     if !checkVarFormat(var):
         print "ERROR: bad var format in solve"
         return "bad var format"
-    desEqu = equation.remove(" ")
+    dequ = equ.remove(" ")
     regx = "#^*/+-"# #=square root, ^=exponent
+    i = 0
+    while !nAsStr(dequ):
+        if dequ[i] == "(":
+            j = i
+            pers = 0
+            while dequ[j] != or pers > 0:
+                if dequ[j] == "(":
+                    pers += 1
+                elif dequ[j] == ")":
+                    pers -= 1
+                j += 1
+            if j <= i + 1:
+                print "ERROR: invalid syntax '()' in equ. in solve"
+                return "syntax error"
+            dequ = dequ.replace(dequ[i: j + 1], str(solve(var, dequ[i + 1: j])))
+        #todo finish writting code for sqrt, exp, multi, div, add, sub
+        
     
+def SSE(dp, var, equ):
+    if !checkDPFormat(dp):
+        print "ERROR: invalid dotplot (dp) format in SSE"
+        return -1
+    if !checkVarFormat(var):
+        print "ERROR: invalid var format in SSE"
+        return -2
+    if 'x' not in equ:
+        print "ERROR: must have x in equ. in SSE"
+        return -3
+    r = 0
+    for i in dp:
+        var["x"] = i[0]
+        r += (i[1] - solve(var, equ)) ** 2
+    return r
 
 def CorrCoef(data):#format: [[x,y],[x,y]..] where [x,y] represents 1 individual
     if !checkDPFormat(data):
@@ -50,18 +94,18 @@ def CorrCoef(data):#format: [[x,y],[x,y]..] where [x,y] represents 1 individual
     for i in data:
         s += ((i[0] - xb) / sx) * ((i[1] - yb) / sy)
     return s / (len(data) - 1)
-
-def SSE(dp, equation):
-    if !checkDPFormat(dp):
-        print "ERROR: invalid dotplot (dp) format in SSE"
-        return -1
-    equation = equation.remove(" ")
     
 def findLSRline(dp):
     if !checkDPFormat(dp):
         print "ERROR: invalid dotplot format in findLSRline"
         return "invalid dotplot format"
+    r = CorrCoef(dp)
     x = [i[0] for i in dp]
+    sx = stats.stdDev(x)
     y = [i[1] for i in dp]
+    sy = stats.stdDev(y)
+    b = (r * sy) / sx
+    a = stats.mean(y) - b * stats.mean(x)
+    #todo figure out a format to return this as
     
     
