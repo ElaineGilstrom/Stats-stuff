@@ -60,28 +60,3 @@ def iqr(data):
     else:
         print "ERROR: data set too small! len(data) >= 5"
         return -1
-
-def CorrCoef(data):#format: [[x,y],[x,y]..] where [x,y] represents 1 individual
-    for i in data:
-        if len(i) != 2:
-            print "ERROR: Correlation Coeficent (CorrCoef) calculation failed!"
-            print "\tdata set contains indivdual with " + str(len(i)) + " variables!"
-            print "\tindividuals must have exactly 2 variables."
-            return 2
-    x = [i[0] for i in data]
-    y = [i[1] for i in data]
-    xb = mean(x)
-    yb = mean(y)
-    if xb == "N/A" or yb == "N/A":
-        print "ERROR: failed to calculate mean in CorrCoef"
-        return 3
-    sx = stdDev(x)
-    sy = stdDev(y)
-    if sx == -1 or sy == -1:
-        print "ERROR: failed to calculate stdDev in CorrCoef"
-        return 4
-    s = 0
-    for i in data:
-        s += ((i[0] - xb) / sx) * ((i[1] - yb) / sy)
-    return s / (len(data) - 1)
-
