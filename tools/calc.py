@@ -18,7 +18,44 @@ def checkVarFormat(data):
             return False
     return True
 
-def solve(var, equ):
+def solveV2(var, equ):
+    if !checkVarFormat(var):
+        print "ERROR: bad var format in solve"
+        return "bad var format"
+    dequ = equ.remove(" ")
+    i = 0
+    while i < len(dequ):
+        if dequ[i] != "(":
+            i += 1
+            continue
+        p = getPers(dequ, i)
+        pe = i + len(p) + 2#pe == index of ending ) for this set of pers + 1
+        fm = 1
+        am = 1
+        if i != 0:
+            j = i - 1
+            if dequ[j].isnumeric():
+                while j >= 0 and dequ[j].isnumeric():
+                    j -= 1
+                j += 1
+                fm = float(dequ[j:i])
+            elif dequ[j].isalpha():
+                fm = var[dequ[j]]
+        if pe < len(dequ):
+            if dequ[pe].isalpha():
+                am = var[dequ[pe]]
+                pe += 1
+            elif dequ[pe].isnumeric():
+                x = pe
+                while x < len(dequ) and dequ[x].isnumeric():
+                    x += 1
+                am = float(dequ[pe: x])
+                pe = x
+                
+        dequ = dequ[:j] + str(fm * solveV2(p) * am) + dequ[pe:]
+            
+
+def solve(var, equ):#TODO: modify for better order of ops
     if !checkVarFormat(var):
         print "ERROR: bad var format in solve"
         return "bad var format"
@@ -44,7 +81,10 @@ def solve(var, equ):
                 elif dequ[i].isalpha():
                     dequ = dequ[:i - 1] + math.sqrt(var[dequ[i]]) + dequ[i + 1:]
                 elif dequ[i].isnumeric():
-                    #TODO: parse num, sqrt it
+                    j = i
+                    while j < len(dequ) and dequ[j].isnumeric():
+                        j += 1
+                    dequ = dequ[:i - 1] + math.sqrt(float(dequ[i:j])) + dequ[j:]
             else:
                 print "ERROR: sqrt at end of equ in solve"
                 return "syntax error"
