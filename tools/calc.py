@@ -1,11 +1,11 @@
 import math
 
 def checkVarFormat(data):
-    if !isinstance(data, dict):
+    if not isinstance(data, dict):
         print "ERROR: Var not dictionary"
         return False
     for i in data.keys():
-        if !isinstance(i, str):
+        if not isinstance(i, str):
             print "ERROR: Var contians non-string key"
             return False
         elif len(i) != 1:
@@ -14,24 +14,25 @@ def checkVarFormat(data):
         try:
             float(data[i])
         except ValueError:
-            print "ERROR: Vars contains non-numeric
+            print "ERROR: Vars contains non-numeric"
             return False
     return True
 
 def solveV2(var, equ):
-    if !checkVarFormat(var):
+    if not checkVarFormat(var):
         print "ERROR: bad var format in solve"
         return "bad var format"
     dequ = equ.remove(" ")
     i = 0
+    #loop 1 for parenthesies
     while i < len(dequ):
         if dequ[i] != "(":
             i += 1
             continue
         p = getPers(dequ, i)
         pe = i + len(p) + 2#pe == index of ending ) for this set of pers + 1
-        fm = 1
-        am = 1
+        fm = 1.0
+        am = 1.0
         if i != 0:
             j = i - 1
             if dequ[j].isnumeric():
@@ -53,7 +54,65 @@ def solveV2(var, equ):
                 pe = x
                 
         dequ = dequ[:j] + str(fm * solveV2(p) * am) + dequ[pe:]
+    #loop 2 for exp/roots
+    i = 0
+    while i < len(dequ):
+        if dequ[i] == "^":
+            if i == 0 or i > len(dequ) - 2:
+                print "ERROR: no num/var " + ("before" if i == 0 else "after") + " ^ in solve!"
+                return "syntax error"
+            b = 1
+            if dequ[i - 1].isalpha():
+                b = var[dequ[i - 1]]
+            elif isNum(dequ[i - 1]) or dequ[i - 1] == ".":
+                b = grabNumB(dequ)
+            else:
+                print "ERROR: " + dequ[i - 1] + "cannot precede ^ in solve"
+                return "syntax error"
+
+            e = 1
+            if dequ[i + 1].isalpha():
+                e = var[dequ[i + 1]]
+            elif isNum(dequ[i + 1]) or dequ[i + 1] == ".":
+                e = grabNumF(dequ, i)
+            else:
+                print "ERROR: " + dequ[i + 1] + " cannot follow ^ in solve!"
+                return "syntax error"
+        elif dequ[i] == "#":
             
+        else:
+            i += 1
+            continue
+    try:
+        return float(dequ)
+    except ValueError:
+        print "Errrrr: I fucked up and missed something."
+        print "dequ is not numeric"
+        return dequ
+
+def grabNumB(s, i):
+    j = i - 2
+    while j >= 0 and isNum(s[j:i]):
+        j -= 1
+    j += 1
+    return float(s[j:i])
+
+def grabNuMF(s, i):
+    j = i + 1
+    while j < len(s) and isNum(s[i + 1: j]):
+        j += 1
+    j -= 1
+    if j == len(s) - 1:
+        if isNum(s[i + 1:]):
+            return float(s[i + 1:])
+    return float(s[i + 1:j])
+
+def isNum(s):
+    try:
+        n = float(s)
+        return True
+    except ValueError:
+        return False
 
 def solve(var, equ):#TODO: modify for better order of ops
     if !checkVarFormat(var):
